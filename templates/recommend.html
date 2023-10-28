@@ -7,7 +7,7 @@
     <h1>Stock Recommendations</h1>
 
     {% if recommendations %}
-    <h2>Top stock recommendations for {{ sector }}</h2>
+    <h2>Top stock recommendations for the ticker</h2>
     <ul>
         {% for recommendation in recommendations %}
         <li>
@@ -17,9 +17,10 @@
         {% endfor %}
     </ul>
     {% else %}
-    <p>No recommendations found for the specified sector.</p>
+    <p>No recommendations found for the specified ticker.</p>
     {% endif %}
     
     <a href="/">Back to Home</a>
 </body>
 </html>
+

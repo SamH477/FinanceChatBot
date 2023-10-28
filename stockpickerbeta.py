@@ -2,12 +2,15 @@ import requests
 import apiconfig
 from textblob import TextBlob
 
-sector_to_stocks = []
+# Use a list to store stocks for each ticker
+ticker_to_stocks = {}
 
-def get_available_sectors():
+# Function to get sentiment data for a given ticker
+def get_sentiment(ticker):
     base_url = 'https://www.alphavantage.co/query'
     params = {
-        'function': 'LIST_SECTORS',
+        'function': 'SYMBOL_SEARCH',
+        'keywords': ticker,
         'apikey': apiconfig.ALPHA_VANTAGE_API_KEY
     }
 
@@ -15,50 +18,16 @@ def get_available_sectors():
 
     if response.status_code == 200:
         data = response.json()
-        available_sectors = data.get('availableSectors', [])
-        return available_sectors
+        stocks = [result['1. symbol'] for result in data.get('bestMatches', [])]
+        return stocks
     else:
         return []
 
-def get_stocks_for_sector(sector):
-    base_url = 'https://www.alphavantage.co/query'
-    params = {
-        'function': 'SECTOR',
-        'apikey': apiconfig.ALPHA_VANTAGE_API_KEY,
-        'sector': sector  # Include the sector parameter in the request
-    }
-
-    response = requests.get(base_url, params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-
-        if 'Rank A: Real-Time Performance' in data:
-            sector_data = data['Rank A: Real-Time Performance']
-            stocks = [item['symbol'] for item in sector_data if item['sector'] == sector]
-            return stocks
-        else:
-            return None
-    else:
-        return None
-
-
-def update_sector_stocks():
-    available_sectors = get_available_sectors()
-
-    for sector in available_sectors:
-        fetched_stocks = get_stocks_for_sector(sector)
-        if fetched_stocks:
-            sector_to_stocks[sector] = fetched_stocks
-
-# Call the function to update sectors with their associated stocks
-update_sector_stocks()
-
-# Function to fetch news articles for a stock using the News API.
-def fetch_news_for_stock(stock):
+# Function to fetch news articles for a stock using the News API
+def fetch_news_for_ticker(ticker):
     base_url = 'https://newsapi.org/v2/everything'
     params = {
-        'q': stock,            # Stock symbol as the search query
+        'q': ticker,  # Use ticker as the search query
         'apiKey': apiconfig.NEWS_API_KEY
     }
 
@@ -70,22 +39,25 @@ def fetch_news_for_stock(stock):
         return articles
     else:
         return []
-    
+
+# Function to analyze sentiment based on text
 def analyze_sentiment(text):
     analysis = TextBlob(text)
-
     return analysis.sentiment.polarity
 
-# Function to recommend stocks based on sector and sentiment analysis.
-def recommend_stocks(sector):
-    if sector not in sector_to_stocks:
-        return "Sorry, I don't have information for that sector."
+# Function to recommend stocks based on the ticker and sentiment analysis
+def recommend_stocks(ticker):
+    available_stocks = get_sentiment(ticker)
 
-    sector_stocks = sector_to_stocks[sector]
+    if not available_stocks:
+        return "Sorry, I don't have information for that ticker."
+
+    ticker_to_stocks[ticker] = available_stocks
+
     recommendations = []
-    print(sector_stocks)
-    for stock in sector_stocks:
-        news_articles = fetch_news_for_stock(stock)
+
+    for stock in available_stocks:
+        news_articles = fetch_news_for_ticker(stock)
         sentiment_scores = [analyze_sentiment(article['title']) for article in news_articles]
         average_sentiment = sum(sentiment_scores) / max(len(sentiment_scores), 1)
 
@@ -93,8 +65,8 @@ def recommend_stocks(sector):
             "stock": stock,
             "average_sentiment": average_sentiment
         })
-    print(recommendations)
 
     recommendations.sort(key=lambda x: x["average_sentiment"], reverse=True)
 
     return recommendations
+
