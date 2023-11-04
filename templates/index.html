@@ -10,6 +10,72 @@
         <input type="text" id="ticker" name="ticker">
         <input type="submit" value="Get Recommendations">
     </form>
+    <button id="startRecognition">Start Recognition</button>
+    <div id="response"></div>
+    <script>
+        const startRecognitionButton = document.getElementById('startRecognition');
+        const response = document.getElementById('response');
+        let recognizing = false;
+        let recognition = new webkitSpeechRecognition();
+
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onerror = function(event) {
+            if (event.error === 'no-speech') {
+                recognition.start();
+            }
+        };
+
+        recognition.onstart = function() {
+            recognizing = true;
+            startRecognitionButton.textContent = "Stop Recognition";
+            response.textContent = "Listening...";
+        };
+
+        recognition.onend = function() {
+            recognizing = false;
+            startRecognitionButton.textContent = "Start Recognition";
+            response.textContent = "";
+            startRecognitionButton.style.display = "inline";
+        };
+
+        recognition.onresult = function(event) {
+            let result = "";
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                result += event.results[i][0].transcript;
+            }
+            sendToServer(result);  // Only send the audio data, not the HTML content
+        };
+
+        startRecognitionButton.addEventListener('click', () => {
+            if (recognizing) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+
+        function appendResponse(command, responseText) {
+            const responseItem = document.createElement('p');
+            responseItem.innerHTML = `<strong>Command:</strong> ${command}<br><strong>Response:</strong> ${responseText}`;
+            response.appendChild(responseItem);
+        }
+
+        function sendToServer(data) {
+            fetch('/', {
+                method: 'POST',
+                body: data,  // Send the recognized text directly
+                headers: {
+                    'Content-Type': 'text/plain'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                appendResponse(data.command, data.response);
+            });
+        }
+    </script>
 </body>
 </html>
 
