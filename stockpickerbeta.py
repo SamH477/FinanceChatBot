@@ -21,7 +21,7 @@ def get_sentiment(ticker):
         stocks = [result['1. symbol'] for result in data.get('bestMatches', [])]
         return stocks
     else:
-        return []
+        return [] # this line is constantly executing but it shouldn't
 
 # Function to fetch news articles for a stock using the News API
 def fetch_news_for_ticker(ticker):
@@ -38,7 +38,7 @@ def fetch_news_for_ticker(ticker):
         articles = data.get('articles', [])
         return articles
     else:
-        return []
+        return [] 
 
 # Function to analyze sentiment based on text
 def analyze_sentiment(text):

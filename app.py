@@ -4,12 +4,11 @@ import stockpickerbeta
 app = Flask(__name__, template_folder='templates')
 
 #create two lists: one for commands and another for corresponding responses
-commands = ['hello', 'who are you?', 'what is a stock', 'goodbye']
+commands = ['hello', 'who are you', 'what is a stock', 'goodbye']
 responses = ['Hello! How can I help you?', 'I am a stock recommender chatbot!', 'A stock is a share in the ownership of a company, including a claim on the companys earnings and assets', 'see ya!']
 
 def recognize_cmd(audio_data):
     command = audio_data  # The audio data is directly passed as the command
-    response = "Command not Recognized"
     for recognized_command in commands:
         index = commands.index(recognized_command)
         if recognized_command in command:
@@ -32,4 +31,3 @@ def recommend():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

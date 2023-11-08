@@ -41,12 +41,14 @@
         };
 
         recognition.onresult = function(event) {
-            let result = "";
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                result += event.results[i][0].transcript;
-            }
-            sendToServer(result);  // Only send the audio data, not the HTML content
-        };
+    let result = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+            result += event.results[i][0].transcript;
+        }
+    }
+    sendToServer(result);  // Only send the audio data, not the HTML content
+};
 
         startRecognitionButton.addEventListener('click', () => {
             if (recognizing) {
@@ -57,10 +59,12 @@
         });
 
         function appendResponse(command, responseText) {
-            const responseItem = document.createElement('p');
-            responseItem.innerHTML = `<strong>Command:</strong> ${command}<br><strong>Response:</strong> ${responseText}`;
-            response.appendChild(responseItem);
-        }
+    const responseItem = document.createElement('p');
+    responseItem.innerHTML = `<strong>You:</strong> ${command}<br><strong>Chatbot:</strong> ${responseText}`;
+    response.appendChild(responseItem);
+}
+
+
 
         function sendToServer(data) {
             fetch('/', {
