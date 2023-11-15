@@ -9,7 +9,7 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h1> Finance Chatbot</h1>
+            <h1 style="color: #7dc0ff;">Finance Chatbot</h1>
         </div>
         <div class="chat-messages">
             <div class="message from-bot">
@@ -18,87 +18,91 @@
             <!-- More chat messages go here -->
         </div>
         <div class="chat-input">
-            <form method="POST" action="/recommend">
+            <form id="chatForm">
                 <input type="text" id="ticker" name="ticker" placeholder="Type your message...">
             </form>
-            <button id="startRecognition"> &#127908</button>
+            <button id="startRecognition">🎤</button>
             <button id="send-button">Send</button>
         </div>
     </div>
     <script>
-const startRecognitionButton = document.getElementById('startRecognition');
-const response = document.getElementById('response');
-const chatMessages = document.querySelector('.chat-messages');
-let recognizing = false;
-let recognition = new webkitSpeechRecognition();
+        const startRecognitionButton = document.getElementById('startRecognition');
+        const sendButton = document.getElementById('send-button');
+        const chatForm = document.getElementById('chatForm');
+        const chatMessages = document.querySelector('.chat-messages');
+        let recognizing = false;
+        let recognition = new webkitSpeechRecognition();
 
-recognition.continuous = true;
-recognition.interimResults = true;
+        recognition.continuous = true;
+        recognition.interimResults = true;
 
-recognition.onerror = function(event) {
-    if (event.error === 'no-speech') {
-        recognition.start();
-    }
-};
+        recognition.onerror = function(event) {
+            if (event.error === 'no-speech') {
+                recognition.start();
+            }
+        };
 
-recognition.onstart = function() {
-    recognizing = true;
-    startRecognitionButton.textContent = "Listening...";
-};
+        recognition.onstart = function() {
+            recognizing = true;
+            startRecognitionButton.textContent = "Listening...";
+        };
 
-recognition.onend = function() {
-    recognizing = false;
-    startRecognitionButton.textContent = '🎤';
-    response.textContent = "";
-    startRecognitionButton.style.display = "inline";
-};
+        recognition.onend = function() {
+            recognizing = false;
+            startRecognitionButton.textContent = '🎤';
+            response.textContent = "";
+            startRecognitionButton.style.display = "inline";
+        };
 
-recognition.onresult = function(event) {
-    let result = "";
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-            result += event.results[i][0].transcript;
+        recognition.onresult = function(event) {
+            let result = "";
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    result += event.results[i][0].transcript;
+                }
+            }
+            appendResponse(result, '');  // Only send the audio data, not the HTML content
+        };
+
+        startRecognitionButton.addEventListener('click', () => {
+            if (recognizing) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+
+        sendButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            const inputField = document.getElementById('ticker');
+            const message = inputField.value;
+            if (message.trim() !== '') {
+                appendResponse(message, '');  // Only send the text data, not the HTML content
+                inputField.value = ''; // Clear the input field
+                sendToServer(message);
+            }
+        });
+
+        function appendResponse(command, responseText) {
+            const responseItem = document.createElement('div');
+            responseItem.classList.add('message', 'from-user');
+            responseItem.innerHTML = `<p><strong>You:</strong> ${command}</p>`;
+            chatMessages.appendChild(responseItem);
+
+            // You can also append the response from the chatbot if needed
+            if (responseText !== '') {
+                const botResponseItem = document.createElement('div');
+                botResponseItem.classList.add('message', 'from-bot');
+                botResponseItem.innerHTML = `<p><strong>Chatbot:</strong> ${responseText}</p>`;
+                chatMessages.appendChild(botResponseItem);
+            }
         }
-    }
-    appendResponse(result, '');  // Only send the audio data, not the HTML content
-};
 
-startRecognitionButton.addEventListener('click', () => {
-    if (recognizing) {
-        recognition.stop();
-    } else {
-        recognition.start();
-    }
-});
-
-function appendResponse(command, responseText) {
-    const responseItem = document.createElement('div');
-    responseItem.classList.add('message', 'from-user');
-    responseItem.innerHTML = `<p><strong>You:</strong> ${command}</p>`;
-    chatMessages.appendChild(responseItem);
-
-    // You can also append the response from the chatbot if needed
-    if (responseText !== '') {
-        const botResponseItem = document.createElement('div');
-        botResponseItem.classList.add('message', 'from-bot');
-        botResponseItem.innerHTML = `<p><strong>Chatbot:</strong> ${responseText}</p>`;
-        chatMessages.appendChild(botResponseItem);
-    }
-}
-
-function sendToServer(data) {
-    fetch('/', {
-        method: 'POST',
-        body: data,  // Send the recognized text directly
-        headers: {
-            'Content-Type': 'text/plain'
+        function sendToServer(data) {
+            // Your fetch logic here
+            // Replace this with your actual server endpoint and logic
+            // You might want to use the Fetch API or another method to send data to your server
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        appendResponse(data.command, data.response);
-    });
-}
-</script>
+    </script>
 </body>
 </html>

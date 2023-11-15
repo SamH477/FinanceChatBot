@@ -21,8 +21,8 @@ body {
 }
 
 .chat-header {
-    background-color: #90EE90;
-    color: #4371B8;
+    background-color: #ddf57d;
+    color: 7da1f5;
     padding: 10px;
     text-align: center;
     border-top-left-radius: 8px;
@@ -43,14 +43,14 @@ body {
 }
 
 .from-bot {
-    background-color: #4371B8;
-    color: #90EE90;
+    background-color: #7dc0ff;
+    color: #ddf57d;
     align-self: flex-start;
 }
 
 .from-user {
-    background-color: #90EE90;
-    color: #000;
+    background-color: #ddf57d;
+    color: #7dc0ff;
     align-self: flex-end;
 }
 
@@ -59,7 +59,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid #7dc0ff;
 }
 
 input[type="text"] {
@@ -72,24 +72,24 @@ input[type="text"] {
 }
 
 #send-button {
-    background-color: #4371B8;
-    color: #90EE90;
+    background-color: #7dc0ff;
+    color: #ddf57d;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
     cursor: pointer;
 }
 #response {
-    background-color: #4371B8;
-    color: #90EE90;
+    background-color: #7dc0ff;
+    color: #ddf57d;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
     cursor: pointer;
 }
 #startRecognition {
-    background-color: #4371B8;
-    color: #90EE90;
+    background-color: #7dc0ff;
+    color: #ddf57d;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
@@ -97,5 +97,5 @@ input[type="text"] {
 }
 
 #send-button:hover {
-    background-color: #4371B8;
+    background-color: #7dc0ff;
 }
