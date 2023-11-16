@@ -7,7 +7,7 @@ body, h1, p {
 body {
     font-family: Arial, sans-serif;
     background-color: hsl(0, 0%, 95%);
-    background-image: url('C:/Users/Melis/OneDrive/Documents/GitHub/FinanceChatBot/templates/blue.png'); /* Replace 'path/to/your/image.jpg' with the actual path to your image file */
+    background-image: url('../public/blue.png');
     background-size: cover; /* This ensures the image covers the entire background */
     background-position: center; /* Center the image */
 }
@@ -99,3 +99,21 @@ input[type="text"] {
 #send-button:hover {
     background-color: #7dc0ff;
 }
+
+.top-link {
+    text-align: center;
+    padding: 10px;
+    background-color: gray; /* Set the background color */
+    border-radius: 10px; /* Rounded corners */
+    display: block; /* Change to block for centering */
+    margin: 10px auto; /* Top and bottom margin, auto horizontally centers the block */
+    width: fit-content; /* Adjust the width to fit the content */
+}
+
+.top-link a { /* Additional styles for the link itself */
+    color: white; /* Set the text color */
+    text-decoration: none; /* Removes the underline from the link */
+    padding: 5px 10px; /* Padding inside the link for better spacing */
+}
+
+

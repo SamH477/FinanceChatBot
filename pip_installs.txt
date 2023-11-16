@@ -1,4 +1,0 @@
-pip install requests
-pip install textblob
-
-YNUILUCG1PS2SNXO alphvantage apikey

@@ -1,1 +1,1 @@
-# FinanceChatBot
+## StockWhisper Analyst
