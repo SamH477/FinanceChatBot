@@ -23,9 +23,11 @@ const App = () => {
                     result += event.results[i][0].transcript;
                 }
             }
-            setTicker(result);
-            appendMessage(result, 'user');
-        };
+            if (result.trim() !== '') {
+                setTicker(result);
+                appendMessage(result, 'user');
+            }
+        };        
 
         recognition.onend = () => {
             setListening(false);
@@ -54,7 +56,7 @@ const App = () => {
         if (ticker.trim() !== '') {
             // Add the user's message as a bubble
             appendMessage(ticker, 'user');
-
+    
             // Send the user's message to the server
             sendToServer(ticker, 'text');
             
@@ -64,8 +66,8 @@ const App = () => {
 
 
     const appendMessage = (message, sender) => {
-        setMessages([...messages, { text: message, from: sender }]);
-    };
+        setMessages(prevMessages => [...prevMessages, { text: message, from: sender }]);
+    };    
 
     const sendToServer = async (data) => {
         try {
