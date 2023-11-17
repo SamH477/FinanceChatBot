@@ -35,37 +35,63 @@ const App = () => {
     }, []);
 
     const handleVoiceClick = () => {
-        if (listening) {
-            recognitionRef.current.stop();
-        } else {
-            recognitionRef.current.start();
-        }
-        setListening(!listening);
+    if (listening) {
+        recognitionRef.current.stop();
+    } else {
+        recognitionRef.current.start();
+    }
+    setListening(!listening);
+    
+    // Send the audio data to the server when the 🎤 button is clicked
+    if (!listening && ticker.trim() !== '') {
+        sendToServer(ticker, 'voice');
+        setTicker('');
+    }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (ticker.trim() !== '') {
+            // Add the user's message as a bubble
             appendMessage(ticker, 'user');
+
+            // Send the user's message to the server
+            sendToServer(ticker, 'text');
+            
             setTicker('');
-            sendToServer(ticker);
         }
     };
+
 
     const appendMessage = (message, sender) => {
         setMessages([...messages, { text: message, from: sender }]);
     };
 
-    const sendToServer = (data) => {
-        // Your fetch logic here
+    const sendToServer = async (data) => {
+        try {
+            const response = await fetch('http://localhost:5000/', {
+                method: 'POST',
+                body: data, // Send the audio data directly
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                const responseText = result.response;
+                appendMessage(responseText, 'bot');
+            } else {
+                console.error('Request failed with status:', response.status);
+            }
+        } catch (error) {
+            console.error('Error sending audio data:', error);
+        }
     };
 
     return (
         <>
         <div className="top-link">
-                <Link to="/analysis">Go to Analysis Page</Link>
-            </div>
-        <div className="chat-container">
+            <Link to="/analysis">Go to Analysis Page</Link>
+        </div>
+        <div className="chat-container" style={{ border: '8px solid white' }}> {/* Add this style */}
             <div className="chat-header">
                 <h1 style={{ color: '#7dc0ff' }}>StockWhisper Analyst</h1>
             </div>
@@ -85,6 +111,7 @@ const App = () => {
                         placeholder="Type your message..."
                         value={ticker}
                         onChange={(e) => setTicker(e.target.value)}
+                        style={{ color: '#000' }} // Set text color to black
                     />
                 </form>
                 <button onClick={handleVoiceClick}>{listening ? "Listening..." : "🎤"}</button>
