@@ -6,7 +6,7 @@ import './style.css'; // Assuming you have style.css in your src folder
 
 const App = () => {
     const [ticker, setTicker] = useState('');
-    const [messages, setMessages] = useState([{ text: "Hello! Ask me what stocks to invest in?", from: "bot" }]);
+    const [messages, setMessages] = useState([{ text: "Hello! I am a finance bot here to help you learn about stocks. What would you like to know?", from: "bot" }]);
     const [listening, setListening] = useState(false);
     const recognitionRef = useRef(null);
 
@@ -24,8 +24,8 @@ const App = () => {
                 }
             }
             if (result.trim() !== '') {
-                setTicker(result);
-                appendMessage(result, 'user');
+                appendMessage(result, 'user');  // Append the voice message directly
+                sendToServer(result, 'voice'); // Send the result to the server
             }
         };        
 
@@ -44,11 +44,6 @@ const App = () => {
     }
     setListening(!listening);
     
-    // Send the audio data to the server when the 🎤 button is clicked
-    if (!listening && ticker.trim() !== '') {
-        sendToServer(ticker, 'voice');
-        setTicker('');
-    }
     };
 
     const handleSubmit = (e) => {

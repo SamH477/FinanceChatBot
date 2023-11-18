@@ -49,7 +49,7 @@ const Analysis = () => {
     recognitionRef.current.start();
     setListening(true);
     // Update button text when recognition is started
-    setButtonText('...');
+    setButtonText('Listening...');
   };
 
   const stopSpeechRecognition = () => {

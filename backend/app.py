@@ -1,25 +1,29 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import string
+from chat_responses import commands, responses  # Import commands and responses
 import analysis
 
 app = Flask(__name__)
 CORS(app)
 
-commands = ['hello', 'who are you', 'what is a stock', 'goodbye']
-responses = [
-    'Hello! How can I help you?',
-    'I am a stock recommender chatbot!',
-    'A stock is a share in the ownership of a company, including a claim on the company\'s earnings and assets',
-    'see ya!'
-]
+def remove_punctuation(text):
+    translator = str.maketrans('', '', string.punctuation)
+    return text.translate(translator)
+
+def get_chatbot_response(user_input):
+    try:
+        # Find the index of the user_input in commands
+        index = commands.index(user_input.lower())
+        # Return the corresponding response
+        return responses[index]
+    except ValueError:
+        # If the command is not found
+        return "Sorry, I don't understand that command."
 
 def recognize_cmd(audio_data):
-    command = audio_data  # The audio data is directly passed as the command
-    for recognized_command in commands:
-        index = commands.index(recognized_command)
-        if recognized_command in command:
-            response = responses[index]
-    return response
+    command = remove_punctuation(audio_data.strip().lower())
+    return get_chatbot_response(command)
 
 @app.route('/', methods=['POST'])
 def handle_voice_recognition():
